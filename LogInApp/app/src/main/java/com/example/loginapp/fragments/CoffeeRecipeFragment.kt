@@ -1,10 +1,12 @@
 package com.example.loginapp.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.loginapp.R
@@ -155,10 +157,19 @@ class CoffeeRecipeFragment : Fragment() {
 
         rvCoffeeRecipe = v.findViewById(R.id.rvCoffeeRecipe)
 
-        val adapter = CoffeeRecipeAdapter(coffeeRecipeList)
+        //Estoy enviando al constructor del adapter una funcion anonima se lllama Lambda
+        val adapter = CoffeeRecipeAdapter(coffeeRecipeList,::onCoffeeRecipeClicked)
+
         rvCoffeeRecipe.adapter = adapter
 
         rvCoffeeRecipe.layoutManager = LinearLayoutManager(context)
+
+    }
+
+    private fun onCoffeeRecipeClicked(coffeeRecipe: CoffeeRecipe){
+        Log.d("Debug","Name: ${coffeeRecipe.name}")
+        val action = CoffeeRecipeFragmentDirections.actionCoffeeRecipeFragmentToCoffeeRecipeDetailFragment(coffeeRecipe)
+        findNavController().navigate(action)
 
     }
 

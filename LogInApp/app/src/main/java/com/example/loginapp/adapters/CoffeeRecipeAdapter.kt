@@ -11,7 +11,11 @@ import com.example.loginapp.entities.CoffeeRecipe
 import com.example.loginapp.R
 
 
-class CoffeeRecipeAdapter(private val list: List<CoffeeRecipe>) : RecyclerView.Adapter<CoffeeRecipeAdapter.ViewHolder>() {
+class CoffeeRecipeAdapter(
+    private val list: List<CoffeeRecipe>,
+    private val onItemClick: (CoffeeRecipe) -> Unit
+) :
+    RecyclerView.Adapter<CoffeeRecipeAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         //Inflo a la vista, el layout item.
@@ -27,6 +31,9 @@ class CoffeeRecipeAdapter(private val list: List<CoffeeRecipe>) : RecyclerView.A
         //Uno la vista con la lista por eso llamo la funcion holder.bind
         val coffeeRecipe = list[position]
         holder.bind(coffeeRecipe)
+        holder.setOnclickListener{
+            onItemClick(coffeeRecipe)
+        }
     }
 
     inner class ViewHolder(private val v: View) : RecyclerView.ViewHolder(v){
@@ -53,6 +60,12 @@ class CoffeeRecipeAdapter(private val list: List<CoffeeRecipe>) : RecyclerView.A
             if (coffeeRecipe.strength < 3) imgStrength3.setImageResource(R.drawable.granovacio)
             if (coffeeRecipe.strength < 2) imgStrength2.setImageResource(R.drawable.granovacio)
             if (coffeeRecipe.strength < 1) imgStrength1.setImageResource(R.drawable.granovacio)
+        }
+
+        fun setOnclickListener(onClick: ()->Unit){
+            v.setOnClickListener{
+                onClick()
+            }
         }
     }
 }

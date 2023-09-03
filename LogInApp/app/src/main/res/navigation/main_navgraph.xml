@@ -18,5 +18,18 @@
         android:id="@+id/coffeeRecipeFragment"
         android:name="com.example.loginapp.fragments.CoffeeRecipeFragment"
         android:label="fragment_list_coffee_recipe"
-        tools:layout="@layout/fragment_list_coffee_recipe" />
+        tools:layout="@layout/fragment_list_coffee_recipe" >
+        <action
+            android:id="@+id/action_coffeeRecipeFragment_to_coffeeRecipeDetailFragment"
+            app:destination="@id/coffeeRecipeDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/coffeeRecipeDetailFragment"
+        android:name="com.example.loginapp.fragments.CoffeeRecipeDetailFragment"
+        android:label="fragment_coffee_recipe_detail"
+        tools:layout="@layout/fragment_coffee_recipe_detail" >
+        <argument
+            android:name="coffeeRecipe"
+            app:argType="com.example.loginapp.entities.CoffeeRecipe" />
+    </fragment>
 </navigation>
