@@ -11,16 +11,12 @@
         android:label="fragment_log_in"
         tools:layout="@layout/fragment_log_in" >
         <action
-            android:id="@+id/action_logInFragment_to_welcomeFragment"
-            app:destination="@id/welcomeFragment" />
+            android:id="@+id/action_logInFragment_to_coffeeRecipeFragment"
+            app:destination="@id/coffeeRecipeFragment" />
     </fragment>
     <fragment
-        android:id="@+id/welcomeFragment"
-        android:name="com.example.loginapp.fragments.WelcomeFragment"
-        android:label="fragment_welcome"
-        tools:layout="@layout/fragment_welcome" >
-        <argument
-            android:name="userFromLogIn"
-            app:argType="com.example.loginapp.entities.User" />
-    </fragment>
+        android:id="@+id/coffeeRecipeFragment"
+        android:name="com.example.loginapp.fragments.CoffeeRecipeFragment"
+        android:label="fragment_list_coffee_recipe"
+        tools:layout="@layout/fragment_list_coffee_recipe" />
 </navigation>

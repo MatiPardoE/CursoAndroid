@@ -43,7 +43,7 @@ class LogInFragment : Fragment() {
         buttonLogIn.setOnClickListener {
             val username : String = inputUsername.text.toString()
             val password : String = inputPassword.text.toString()
-            val action = LogInFragmentDirections.actionLogInFragmentToWelcomeFragment(User(username,password))
+            val action = LogInFragmentDirections.actionLogInFragmentToCoffeeRecipeFragment()
             val snackbarEmpty = Snackbar.make(v,"Fill the field",Snackbar.LENGTH_SHORT)
             val snackbarNotUser = Snackbar.make(v,"User Not Found", Snackbar.LENGTH_SHORT)
             val snackbarWrongPass = Snackbar.make(v,"Wrong Password", Snackbar.LENGTH_SHORT)
