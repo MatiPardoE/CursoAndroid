@@ -9,6 +9,16 @@
     android:outlineSpotShadowColor="#4CAF50"
     tools:context=".fragments.CoffeeRecipeDetailFragment">
 
+    <ImageView
+        android:id="@+id/editButtonImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/lapiz"
+        app:layout_constraintBottom_toBottomOf="@+id/discardButtonImage"
+        app:layout_constraintEnd_toStartOf="@+id/discardButtonImage"
+        app:layout_constraintStart_toEndOf="@+id/addButtonImage"
+        app:layout_constraintTop_toTopOf="@+id/discardButtonImage" />
+
     <EditText
         android:id="@+id/editTextRatio"
         android:layout_width="wrap_content"
@@ -17,6 +27,8 @@
         android:background="@android:color/transparent"
         android:hint="00"
         android:inputType="number"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
         android:text="10"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:textColor="@color/black"
@@ -29,8 +41,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Name"
         android:background="@android:color/transparent"
+        android:hint="Name"
+        android:minHeight="48dp"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -45,6 +58,7 @@
         android:layout_marginTop="24dp"
         android:layout_marginEnd="10dp"
         android:background="@android:color/transparent"
+        android:minHeight="48dp"
         android:text="Description"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         android:textColor="@color/black"
@@ -71,10 +85,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="10dp"
-        android:text="CoffeType"
         android:background="@android:color/transparent"
-        android:textColor="@color/black"
+        android:minHeight="48dp"
+        android:text="CoffeType"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textDescriptionCoffeeRecipe"
         app:layout_constraintTop_toBottomOf="@+id/textDescriptionCoffeeRecipe" />
@@ -98,10 +113,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="10dp"
-        android:text="GrindLevel"
         android:background="@android:color/transparent"
-        android:textColor="@color/black"
+        android:minHeight="48dp"
+        android:text="GrindLevel"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textCoffeeType"
         app:layout_constraintTop_toBottomOf="@+id/textCoffeeType" />
@@ -212,7 +228,7 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@drawable/cheque"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/discardButtonImage"
         app:layout_constraintStart_toStartOf="parent"
@@ -224,12 +240,23 @@
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:src="@drawable/cerrar"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/addButtonImage"
         app:layout_constraintTop_toBottomOf="@+id/seekBarRatio"
         app:layout_constraintVertical_bias="0.19999999" />
+
+    <ImageView
+        android:id="@+id/deleteButtonImage"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/delete"
+        app:layout_constraintBottom_toBottomOf="@+id/discardButtonImage"
+        app:layout_constraintEnd_toStartOf="@+id/discardButtonImage"
+        app:layout_constraintStart_toEndOf="@+id/addButtonImage"
+        app:layout_constraintTop_toTopOf="@+id/discardButtonImage"
+        app:layout_constraintVertical_bias="1.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

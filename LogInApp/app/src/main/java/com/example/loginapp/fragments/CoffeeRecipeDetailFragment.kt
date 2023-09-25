@@ -28,6 +28,9 @@ class CoffeeRecipeDetailFragment : Fragment() {
     lateinit var edittextRatio : EditText
     lateinit var addButton : ImageView
     lateinit var discardButton : ImageView
+    lateinit var deleteButton : ImageView
+    lateinit var editButton : ImageView
+    var idFromList : Int = 0
     private val args : CoffeeRecipeDetailFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,14 +47,16 @@ class CoffeeRecipeDetailFragment : Fragment() {
         seekBarStrength = v.findViewById(R.id.seekBarStrength)
         seekBarRatio = v.findViewById(R.id.seekBarRatio)
         addButton = v.findViewById(R.id.addButtonImage)
+        editButton = v.findViewById(R.id.editButtonImage)
         discardButton = v.findViewById(R.id.discardButtonImage)
+        deleteButton = v.findViewById(R.id.deleteButtonImage)
 
         return v
     }
 
     override fun onStart() {
         super.onStart()
-        val idFromList = args.idCoffeeRecipe
+        idFromList = args.idCoffeeRecipe
 
         defineTypeOfDetail(idFromList)
     }
@@ -122,22 +127,55 @@ class CoffeeRecipeDetailFragment : Fragment() {
                 ((1/10).toDouble())
             }
 
+            if(idFromList == ADD_NEW){
+                val addCoffeeRecipeToDB = CoffeeRecipe(
+                    id = 0,
+                    name = txtNameCoffeeRecipe.text.toString(),
+                    description = textDescriptionCoffeeRecipe.text.toString(),
+                    coffeeType = textCoffeeType.text.toString(),
+                    grindLevel = textGrindLevel.text.toString(),
+                    coffeeToWaterRatio = coffeeWaterRatio,
+                    strength = seekBarStrength.progress + 1
+                )
+                dao?.insertCoffeeRecipe(addCoffeeRecipeToDB)
+                requireActivity().onBackPressed()
+            }else{
+                val editCoffeeRecipeToDB = CoffeeRecipe(
+                    id = idFromList,
+                    name = txtNameCoffeeRecipe.text.toString(),
+                    description = textDescriptionCoffeeRecipe.text.toString(),
+                    coffeeType = textCoffeeType.text.toString(),
+                    grindLevel = textGrindLevel.text.toString(),
+                    coffeeToWaterRatio = coffeeWaterRatio,
+                    strength = seekBarStrength.progress + 1
+                )
 
-            val addCoffeeRecipeToDB = CoffeeRecipe(
-                id = 0,
+                dao?.updateCoffeeRecipe(editCoffeeRecipeToDB)
+                requireActivity().onBackPressed()
+            }
+
+        }
+
+        discardButton.setOnClickListener{
+            requireActivity().onBackPressed()
+        }
+
+        editButton.setOnClickListener{
+            unlockEdit()
+        }
+
+        deleteButton.setOnClickListener {
+            val dao = AppDatabase.getInstance(v.context)?.coffeeRecipeDao()
+            val deleteCoffeeRecipeToDB = CoffeeRecipe(
+                id = idFromList,
                 name = txtNameCoffeeRecipe.text.toString(),
                 description = textDescriptionCoffeeRecipe.text.toString(),
                 coffeeType = textCoffeeType.text.toString(),
                 grindLevel = textGrindLevel.text.toString(),
-                coffeeToWaterRatio = coffeeWaterRatio,
-                strength = seekBarStrength.progress
+                coffeeToWaterRatio = 1.0/10,
+                strength = seekBarStrength.progress + 1
             )
-
-            dao?.insertCoffeeRecipe(addCoffeeRecipeToDB)
-            requireActivity().onBackPressed()
-        }
-
-        discardButton.setOnClickListener{
+            dao?.delete(deleteCoffeeRecipeToDB)
             requireActivity().onBackPressed()
         }
     }
@@ -174,11 +212,16 @@ class CoffeeRecipeDetailFragment : Fragment() {
         edittextRatio.isEnabled = true
         seekBarRatio.isClickable = true
         seekBarStrength.isClickable = true
-        addButton.visibility = View.VISIBLE
-        discardButton.visibility = View.VISIBLE
-        txtNameCoffeeRecipe.hint = "Name"
         seekBarRatio.isEnabled = true
         seekBarStrength.isEnabled = true
+        addButton.visibility = View.VISIBLE  //#TODO separar cunado edita que hace
+        discardButton.visibility = View.VISIBLE
+        editButton.visibility = View.INVISIBLE
+        deleteButton.visibility = View.INVISIBLE
+        if(idFromList != ADD_NEW){
+            //Only edit
+            deleteButton.visibility = View.VISIBLE
+        }
     }
 
     private fun lockEdit() {
@@ -189,12 +232,15 @@ class CoffeeRecipeDetailFragment : Fragment() {
         seekBarRatio.isEnabled = false
         seekBarStrength.isEnabled = false
         edittextRatio.isEnabled = false
-        addButton.visibility = View.GONE
-        discardButton.visibility = View.GONE
+        addButton.visibility = View.INVISIBLE
+        discardButton.visibility = View.INVISIBLE
         seekBarStrength.isClickable = false
         seekBarRatio.isClickable = false
         seekBarRatio.isEnabled = false
         seekBarStrength.isEnabled = false
+        deleteButton.visibility = View.INVISIBLE
+        //Lock siempre se usa con entradas ya existentes
+        editButton.visibility = View.VISIBLE
     }
 
     companion object{
