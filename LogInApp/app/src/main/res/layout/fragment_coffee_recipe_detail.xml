@@ -9,53 +9,122 @@
     android:outlineSpotShadowColor="#4CAF50"
     tools:context=".fragments.CoffeeRecipeDetailFragment">
 
-    <TextView
+    <EditText
+        android:id="@+id/editTextRatio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:background="@android:color/transparent"
+        android:hint="00"
+        android:inputType="number"
+        android:text="10"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/seekBarRatio"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/seekBarRatio" />
+
+    <EditText
         android:id="@+id/txtNameCoffeeRecipe"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Name"
+        android:background="@android:color/transparent"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Display1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
+    <EditText
         android:id="@+id/textDescriptionCoffeeRecipe"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="10dp"
+        android:background="@android:color/transparent"
         android:text="Description"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textDescriptionCoffeeRecipeLabel"
         app:layout_constraintTop_toBottomOf="@+id/txtNameCoffeeRecipe" />
 
     <TextView
+        android:id="@+id/textDescriptionCoffeeRecipeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
+        android:text="Description"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toBottomOf="@+id/textDescriptionCoffeeRecipe"
+        app:layout_constraintEnd_toStartOf="@id/textDescriptionCoffeeRecipe"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtNameCoffeeRecipe" />
+
+    <EditText
         android:id="@+id/textCoffeeType"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="10dp"
         android:text="CoffeType"
-        app:layout_constraintEnd_toStartOf="@id/textGrindLevel"
-        app:layout_constraintStart_toStartOf="parent"
+        android:background="@android:color/transparent"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textDescriptionCoffeeRecipe"
         app:layout_constraintTop_toBottomOf="@+id/textDescriptionCoffeeRecipe" />
 
     <TextView
+        android:id="@+id/textCoffeeTypeLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="CoffeeType"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toBottomOf="@+id/textCoffeeType"
+        app:layout_constraintEnd_toStartOf="@id/textCoffeeType"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textDescriptionCoffeeRecipeLabel"
+        app:layout_constraintTop_toBottomOf="@+id/textDescriptionCoffeeRecipe" />
+
+    <EditText
         android:id="@+id/textGrindLevel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="10dp"
         android:text="GrindLevel"
+        android:background="@android:color/transparent"
+        android:textColor="@color/black"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textCoffeeType"
-        app:layout_constraintTop_toBottomOf="@+id/textDescriptionCoffeeRecipe" />
+        app:layout_constraintStart_toStartOf="@+id/textCoffeeType"
+        app:layout_constraintTop_toBottomOf="@+id/textCoffeeType" />
+
+    <TextView
+        android:id="@+id/textGrindLevelLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="GrindLevel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+        app:layout_constraintBottom_toBottomOf="@+id/textGrindLevel"
+        app:layout_constraintEnd_toStartOf="@id/textGrindLevel"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textCoffeeTypeLabel"
+        app:layout_constraintTop_toBottomOf="@+id/textCoffeeType" />
 
     <SeekBar
         android:id="@+id/seekBarStrength"
         style="@android:style/Widget.Material.SeekBar.Discrete"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginEnd="10dp"
         android:clickable="false"
         android:max="4"
         android:progress="3"
@@ -63,46 +132,104 @@
         android:thumb="@drawable/granocolorchico"
         app:layout_constraintBottom_toBottomOf="@+id/textStrength"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textStrength"
+        app:layout_constraintStart_toStartOf="@+id/textGrindLevel"
         app:layout_constraintTop_toTopOf="@+id/textStrength" />
 
     <TextView
         android:id="@+id/textStrength"
-        android:layout_width="80dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
         android:text="Strength:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintEnd_toStartOf="@id/seekBarStrength"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textCoffeeType" />
+        app:layout_constraintTop_toBottomOf="@+id/textGrindLevel" />
 
     <TextView
-        android:id="@+id/textRatioTitle"
-        android:layout_width="80dp"
+        android:id="@+id/textRatioLabel"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="24dp"
         android:text="Ratio:"
-        app:layout_constraintEnd_toStartOf="@+id/seekBarStrength"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textStrength" />
 
     <TextView
-        android:id="@+id/textRatio"
-        android:layout_width="0dp"
+        android:id="@+id/textViewMin"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Ratio"
-        android:textAlignment="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/textRatioTitle"
+        android:layout_marginTop="-6dp"
+        android:text="Ligth"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/seekBarStrength"
+        app:layout_constraintHorizontal_bias="0.02"
+        app:layout_constraintStart_toStartOf="@+id/seekBarStrength"
         app:layout_constraintTop_toBottomOf="@+id/seekBarStrength" />
 
-    <ListView
-        android:id="@+id/listWater_Time"
+    <TextView
+        android:id="@+id/textViewMax"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-6dp"
+        android:text="Strong"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/seekBarStrength"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/seekBarStrength"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarStrength" />
+
+    <SeekBar
+        android:id="@+id/seekBarRatio"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="10dp"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:max="25"
+        android:progress="10"
+        app:layout_constraintBottom_toBottomOf="@+id/textRatioLabel"
+        app:layout_constraintEnd_toStartOf="@id/textViewRatio"
+        app:layout_constraintStart_toStartOf="@+id/seekBarStrength"
+        app:layout_constraintTop_toTopOf="@+id/textRatioLabel" />
+
+    <TextView
+        android:id="@+id/textViewRatio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="1:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintBottom_toBottomOf="@+id/seekBarRatio"
+        app:layout_constraintEnd_toStartOf="@id/editTextRatio"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@id/seekBarRatio"
+        app:layout_constraintTop_toTopOf="@+id/seekBarRatio" />
+
+    <ImageView
+        android:id="@+id/addButtonImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/cheque"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/discardButtonImage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarRatio"
+        app:layout_constraintVertical_bias="0.19999999" />
+
+    <ImageView
+        android:id="@+id/discardButtonImage"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:src="@drawable/cerrar"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textRatio" />
+        app:layout_constraintStart_toEndOf="@+id/addButtonImage"
+        app:layout_constraintTop_toBottomOf="@+id/seekBarRatio"
+        app:layout_constraintVertical_bias="0.19999999" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
