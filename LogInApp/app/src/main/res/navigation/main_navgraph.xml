@@ -22,4 +22,9 @@
         <argument android:name="id_coffeeRecipe"
             android:defaultValue="1" />
     </fragment>
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.example.loginapp.fragments.UserDetailFragment"
+        android:label="fragment_user_detail"
+        tools:layout="@layout/fragment_user_detail" />
 </navigation>

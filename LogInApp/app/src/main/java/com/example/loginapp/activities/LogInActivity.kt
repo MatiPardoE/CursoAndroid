@@ -1,6 +1,8 @@
 package com.example.loginapp.activities
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -12,11 +14,16 @@ import com.example.loginapp.database.AppDatabase
 import com.example.loginapp.database.UserDao
 import com.example.loginapp.entities.User
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.GsonBuilder
 
 class LogInActivity : AppCompatActivity() {
+
+    private val PREF_NAME = "myPreferences"
+
     private lateinit var inputUsername : EditText
     private lateinit var inputPassword : EditText
     private lateinit var buttonLogIn: Button
+    private lateinit var buttonSignIn: Button
     private var db: AppDatabase? = null
     private var userDao: UserDao? = null
     private var userList : MutableList<User?>? = null
@@ -28,6 +35,7 @@ class LogInActivity : AppCompatActivity() {
         inputUsername = findViewById(R.id.inputUsername)
         inputPassword = findViewById(R.id.inputPassword)
         buttonLogIn = findViewById(R.id.buttonLogIn)
+        buttonSignIn = findViewById(R.id.buttonSignIn)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
@@ -58,10 +66,39 @@ class LogInActivity : AppCompatActivity() {
                 USER_NOT_FOUND -> snackbarNotUser.show()
                 WRONG_PASSWORD -> snackbarWrongPass.show()
                 LOGIN_OK -> {
+                    val sharedPref: SharedPreferences = this.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+                    val editor = sharedPref.edit()
+
+                    editor.putString("USER", username)
+                    //val json: String = GsonBuilder().create().toJson(User())
+                    //editor.putString("USER", json).apply()
+                    editor.apply()
+
                     startActivity(Intent(this, MainActivity::class.java))
                     finish()
                 }
                 else -> Log.d("Error", "Algo salio mal con la funcion checkCredential")
+            }
+        }
+
+        buttonSignIn.setOnClickListener {
+            val username: String = inputUsername.text.toString()
+            val password: String = inputPassword.text.toString()
+            //val action = LogInFragmentDirections.actionLogInFragmentToCoffeeRecipeFragment()
+            val snackbarEmpty = Snackbar.make(it, "Fill the field", Snackbar.LENGTH_SHORT)
+            val snackbarUserUsed = Snackbar.make(it, "User already exist", Snackbar.LENGTH_SHORT)
+            val snackbarSignInOk = Snackbar.make(it, "User created successful", Snackbar.LENGTH_SHORT)
+
+
+
+            when (checkCredentialsSignIn(userList, username, password)) {
+                EMPTY_FIELDS -> snackbarEmpty.show()
+                USER_EXIST -> snackbarUserUsed.show()
+                SIGNIN_OK -> {
+                    userDao?.insertUser(User(0,username,password))
+                    snackbarSignInOk.show()
+                    userList = userDao?.fetchAllUsers().orEmpty().toMutableList() //Leo de nuevo la DB
+                }
             }
         }
     }
@@ -79,10 +116,27 @@ class LogInActivity : AppCompatActivity() {
         return LOGIN_OK
     }
 
+    private fun checkCredentialsSignIn(users: MutableList<User?>?, inputUsername: String, inputPassword: String): Int {
+        if (users != null){
+            if (inputUsername.isEmpty() || inputPassword.isEmpty()) return EMPTY_FIELDS
+            if (!users.any { it!!.username == inputUsername }){
+                return SIGNIN_OK
+            }else{
+                return USER_EXIST
+            }
+        }else{
+            return EMPTY_DB
+        }
+        return EMPTY_FIELDS //No deberia llegar aca
+    }
+
     companion object {
         const val EMPTY_FIELDS = 0
         const val USER_NOT_FOUND = 1
         const val WRONG_PASSWORD = 2
         const val LOGIN_OK = 3
+        const val EMPTY_DB = 4
+        const val SIGNIN_OK = 5
+        const val USER_EXIST = 6
     }
 }

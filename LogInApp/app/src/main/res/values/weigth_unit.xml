@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Weight Unit Preference -->
+    <string-array name="weight_unit">
+        <item>Grams</item>
+        <item>Ounces</item>
+    </string-array>
+
+    <string-array name="weight_unit_values">
+        <item>gr</item>
+        <item>oz</item>
+    </string-array>
+</resources>

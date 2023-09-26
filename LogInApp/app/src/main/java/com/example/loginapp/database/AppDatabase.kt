@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.example.loginapp.entities.CoffeeRecipe
 import com.example.loginapp.entities.User
 
-@Database(entities = [CoffeeRecipe::class, User::class], version = 2, exportSchema = false)
+@Database(entities = [CoffeeRecipe::class, User::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun coffeeRecipeDao(): CoffeeRecipeDao  //Interfaces de mis DAO

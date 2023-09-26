@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.navArgs
+import androidx.preference.PreferenceManager
 import com.example.loginapp.R
 import com.example.loginapp.database.AppDatabase
 import com.example.loginapp.entities.CoffeeRecipe
@@ -30,7 +31,8 @@ class CoffeeRecipeDetailFragment : Fragment() {
     lateinit var discardButton : ImageView
     lateinit var deleteButton : ImageView
     lateinit var editButton : ImageView
-    var idFromList : Int = 0
+    private var maxRatio : Int = 25
+    private var idFromList : Int = 0
     private val args : CoffeeRecipeDetailFragmentArgs by navArgs()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,8 +58,11 @@ class CoffeeRecipeDetailFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        idFromList = args.idCoffeeRecipe
 
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        maxRatio = prefs.getString("maxRatio","25")!!.toIntOrNull() ?: 25
+        seekBarRatio.max = maxRatio
+        idFromList = args.idCoffeeRecipe
         defineTypeOfDetail(idFromList)
     }
 
@@ -83,7 +88,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
                     // Limita el número a estar entre 1 y 50
                     val limitNumber = when {
                         number < 1 -> 1
-                        number > 25 -> 25
+                        number > maxRatio -> maxRatio
                         else -> number
                     }
 
@@ -194,8 +199,14 @@ class CoffeeRecipeDetailFragment : Fragment() {
                 textCoffeeType.setText(coffeeRecipeSelected.coffeeType)
                 textGrindLevel.setText(coffeeRecipeSelected.grindLevel)
                 seekBarStrength.progress = coffeeRecipeSelected.strength-1
-                edittextRatio.setText((1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt().toString())
-                seekBarRatio.progress = (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()
+                if(maxRatio <= (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()){
+                    edittextRatio.setText("25")
+                    seekBarRatio.progress = 25
+                }else{
+                    edittextRatio.setText((1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt().toString())
+                    seekBarRatio.progress = (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()
+                }
+
             }else{
                 txtNameCoffeeRecipe.setText("404 NotFound")
             }
@@ -245,6 +256,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
 
     companion object{
         const val ADD_NEW = -1
+        const val GR_TO_OZ = 0.035274
     }
 
 
