@@ -66,6 +66,6 @@ dependencies {
     // To use Kotlin annotation processing tool (kapt)
     kapt("androidx.room:room-compiler:2.5.2")
     implementation("com.github.bumptech.glide:glide:4.16.0")
-
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation ("com.google.code.gson:gson:2.9.0")
 }

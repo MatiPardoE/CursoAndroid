@@ -47,6 +47,7 @@ class CoffeeRecipeAdapter(
         fun bind(coffeeRecipe: CoffeeRecipe?){
             //Aca es donde asocio a la vista las variables de mi objeto
             val txtName: TextView = v.findViewById(R.id.txtName)
+            val txtGrind:TextView = v.findViewById(R.id.txtGrind)
             val imgStrength1 : ImageView = v.findViewById(R.id.imageViewGrano1)
             val imgStrength2 : ImageView = v.findViewById(R.id.imageViewGrano2)
             val imgStrength3 : ImageView = v.findViewById(R.id.imageViewGrano3)
@@ -55,6 +56,7 @@ class CoffeeRecipeAdapter(
 
             if (coffeeRecipe != null) {
                 txtName.text = coffeeRecipe.name
+                txtGrind.text= coffeeRecipe.grindLevel
                 if (coffeeRecipe.strength < 5) imgStrength5.setImageResource(R.drawable.granovacio)
                 if (coffeeRecipe.strength < 4) imgStrength4.setImageResource(R.drawable.granovacio)
                 if (coffeeRecipe.strength < 3) imgStrength3.setImageResource(R.drawable.granovacio)

@@ -39,7 +39,7 @@ class StartingDB(private val context: Context) : RoomDatabase.Callback() {
                 name = "Smile Tiger Coffee Roasters",
                 description = "A solid daily driver recipe for a smooth, clean cup.",
                 coffeeType = "Medium to medium-light roast (or any coffee you like)",
-                grindLevel = "Not specified",
+                grindLevel = "Extra Fine",
                 coffeeToWaterRatio = 32.0 / 500.0, // Ratio de café a agua: 32 g de café a 500 g de agua
                 strength = 2
                 //url_image = "https://cdn-icons-png.flaticon.com/128/8643/8643316.png"
@@ -58,7 +58,7 @@ class StartingDB(private val context: Context) : RoomDatabase.Callback() {
                 id = 0,
                 name = "Paul Ross",
                 description = "Perfect for strong coffee lovers, produces a bold and flavorful cup.",
-                coffeeType = "Medium to medium-coarse grind (recommended)",
+                coffeeType = "Liberica",
                 grindLevel = "Medium to medium-coarse",
                 coffeeToWaterRatio = 35.0 / 500.0, // Ratio de café a agua: 35 g de café a 500 g de agua
                 strength = 4
@@ -88,8 +88,8 @@ class StartingDB(private val context: Context) : RoomDatabase.Callback() {
                 id = 0,
                 name = "Blue Bottle Chemex",
                 description = "A recipe from Blue Bottle for making large batches of coffee.",
-                coffeeType = "Not specified",
-                grindLevel = "Not specified",
+                coffeeType = "Arabica",
+                grindLevel = "Coarse",
                 coffeeToWaterRatio = 50.0 / 700.0, // Ratio de café a agua: 50 g de café a 700 g de agua
                 strength = 3
                 //url_image = "https://cdn-icons-png.flaticon.com/128/8643/8643316.png"
@@ -108,8 +108,8 @@ class StartingDB(private val context: Context) : RoomDatabase.Callback() {
                 id = 0,
                 name = "Slightly Stronger Coffee",
                 description = "A recipe for coffee that's slightly stronger than the standard.",
-                coffeeType = "Not specified",
-                grindLevel = "Not specified",
+                coffeeType = "Dark Roast",
+                grindLevel = "Medium-Coarse",
                 coffeeToWaterRatio = 20.0 / 300.0, // Ratio de café a agua: 20 g de café a 300 g de agua (1:15)
                 strength = 2
                 //url_image = "https://cdn-icons-png.flaticon.com/128/8643/8643316.png"
@@ -129,7 +129,7 @@ class StartingDB(private val context: Context) : RoomDatabase.Callback() {
                 name = "Chemex Fast Pour",
                 description = "A strong recipe with a 1:11 coffee to water ratio for a non-bitter cup.",
                 coffeeType = "Medium or dark roast (recommended)",
-                grindLevel = "Medium-coarse",
+                grindLevel = "Extra Fine",
                 coffeeToWaterRatio = 30.0 / 340.0, // Ratio de café a agua: 30 g de café a 340 g de agua (1:11)
                 strength = 4,
                 //url_image = "https://cdn-icons-png.flaticon.com/128/8643/8643316.png"
@@ -139,7 +139,7 @@ class StartingDB(private val context: Context) : RoomDatabase.Callback() {
                 name = "Chemex Strong",
                 description = "A strong recipe with a 1:11 coffee to water ratio for a non-bitter cup.",
                 coffeeType = "Medium or dark roast (recommended)",
-                grindLevel = "Medium-coarse",
+                grindLevel = "Fine",
                 coffeeToWaterRatio = 30.0 / 340.0, // Ratio de café a agua: 30 g de café a 340 g de agua (1:11)
                 strength = 4,
                 //url_image = "https://cdn-icons-png.flaticon.com/128/8643/8643316.png"

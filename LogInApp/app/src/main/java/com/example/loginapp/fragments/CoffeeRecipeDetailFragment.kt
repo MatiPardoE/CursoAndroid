@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
-import androidx.core.view.WindowCompat
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import com.example.loginapp.R
@@ -19,18 +18,18 @@ import com.example.loginapp.entities.CoffeeRecipe
 
 class CoffeeRecipeDetailFragment : Fragment() {
 
-    lateinit var v : View
-    lateinit var txtNameCoffeeRecipe : EditText
-    lateinit var textDescriptionCoffeeRecipe : EditText
-    lateinit var textCoffeeType : EditText
-    lateinit var textGrindLevel : EditText
-    lateinit var seekBarStrength : SeekBar
+    private lateinit var v : View
+    private lateinit var txtNameCoffeeRecipe : EditText
+    private lateinit var textDescriptionCoffeeRecipe : EditText
+    private lateinit var textCoffeeType : EditText
+    private lateinit var textGrindLevel : EditText
+    private lateinit var seekBarStrength : SeekBar
     lateinit var seekBarRatio : SeekBar
     lateinit var edittextRatio : EditText
-    lateinit var addButton : ImageView
-    lateinit var discardButton : ImageView
-    lateinit var deleteButton : ImageView
-    lateinit var editButton : ImageView
+    private lateinit var addButton : ImageView
+    private lateinit var discardButton : ImageView
+    private lateinit var deleteButton : ImageView
+    private lateinit var editButton : ImageView
     private var maxRatio : Int = 25
     private var idFromList : Int = 0
     private val args : CoffeeRecipeDetailFragmentArgs by navArgs()
@@ -256,7 +255,6 @@ class CoffeeRecipeDetailFragment : Fragment() {
 
     companion object{
         const val ADD_NEW = -1
-        const val GR_TO_OZ = 0.035274
     }
 
 
