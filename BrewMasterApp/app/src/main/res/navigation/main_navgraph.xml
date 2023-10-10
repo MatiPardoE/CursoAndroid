@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_navgraph"
+    app:startDestination="@id/coffeeRecipeFragment">
+
+    <fragment
+        android:id="@+id/coffeeRecipeFragment"
+        android:name="com.example.brewmaster.fragments.CoffeeRecipeFragment"
+        android:label="fragment_list_coffee_recipe"
+        tools:layout="@layout/fragment_list_coffee_recipe" >
+        <action
+            android:id="@+id/action_coffeeRecipeFragment_to_coffeeRecipeDetailFragment"
+            app:destination="@id/coffeeRecipeDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/coffeeRecipeDetailFragment"
+        android:name="com.example.brewmaster.fragments.CoffeeRecipeDetailFragment"
+        android:label="fragment_coffee_recipe_detail"
+        tools:layout="@layout/fragment_coffee_recipe_detail" >
+        <argument android:name="id_coffeeRecipe"
+            android:defaultValue="1" />
+    </fragment>
+    <fragment
+        android:id="@+id/userDetailFragment"
+        android:name="com.example.brewmaster.fragments.UserDetailFragment"
+        android:label="fragment_user_detail"
+        tools:layout="@layout/fragment_user_detail" />
+</navigation>
