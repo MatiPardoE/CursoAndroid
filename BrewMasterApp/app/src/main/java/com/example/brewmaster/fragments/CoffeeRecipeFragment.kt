@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,8 +22,8 @@ class CoffeeRecipeFragment : Fragment() {
     private lateinit var v : View
     private lateinit var rvCoffeeRecipe: RecyclerView
     private lateinit var addButton : FloatingActionButton
-    private var db: AppDatabase? = null
-    private var coffeeRecipeDao: CoffeeRecipeDao? = null
+    private lateinit var viewModel: CoffeeRecipeViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,12 +38,10 @@ class CoffeeRecipeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        db = AppDatabase.getInstance(v.context)
-        coffeeRecipeDao = db?.coffeeRecipeDao()
+        viewModel = ViewModelProvider(requireActivity())[CoffeeRecipeViewModel::class.java]
 
 
-        // Dummy call to pre-populate db
-        var coffeeRecipeList = coffeeRecipeDao?.fetchAllCoffeeRecipe()
+        var coffeeRecipeList = viewModel.getCoffeeRecipeList(v.context)
 
         rvCoffeeRecipe = v.findViewById(R.id.rvCoffeeRecipe)
 

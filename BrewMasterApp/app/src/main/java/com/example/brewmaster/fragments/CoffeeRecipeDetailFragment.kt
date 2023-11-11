@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import com.example.brewmaster.R
@@ -141,8 +143,10 @@ class CoffeeRecipeDetailFragment : Fragment() {
                     coffeeToWaterRatio = coffeeWaterRatio,
                     strength = seekBarStrength.progress + 1
                 )
+
                 dao?.insertCoffeeRecipe(addCoffeeRecipeToDB)
-                requireActivity().onBackPressed()
+
+                findNavController().popBackStack()
             }else{
                 val editCoffeeRecipeToDB = CoffeeRecipe(
                     id = idFromList,
@@ -155,13 +159,13 @@ class CoffeeRecipeDetailFragment : Fragment() {
                 )
 
                 dao?.updateCoffeeRecipe(editCoffeeRecipeToDB)
-                requireActivity().onBackPressed()
+                findNavController().popBackStack()
             }
 
         }
 
         discardButton.setOnClickListener{
-            requireActivity().onBackPressed()
+            findNavController().popBackStack()
         }
 
         editButton.setOnClickListener{
@@ -180,7 +184,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
                 strength = seekBarStrength.progress + 1
             )
             dao?.delete(deleteCoffeeRecipeToDB)
-            requireActivity().onBackPressed()
+            findNavController().popBackStack()
         }
     }
 
