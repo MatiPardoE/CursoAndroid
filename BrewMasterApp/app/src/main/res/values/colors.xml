@@ -3,5 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grano_ligth">#B35D4A</color>
+    <color name="transparent">#00FFFFFF</color>
     <color name="BackgroundSplash">#AD8A876C</color>
 </resources>

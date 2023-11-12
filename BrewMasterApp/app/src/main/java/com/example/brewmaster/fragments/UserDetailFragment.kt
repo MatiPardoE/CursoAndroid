@@ -13,9 +13,15 @@ import android.widget.TextView
 import com.example.brewmaster.R
 import com.example.brewmaster.activities.LogInActivity
 import com.example.brewmaster.activities.SettingsActivity
+import com.example.brewmaster.activities.SignInActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class UserDetailFragment : Fragment() {
 
+    private lateinit var auth : FirebaseAuth
     private val PREF_NAME = "myPreferences"
     private lateinit var v : View
     private var username : String = ""
@@ -30,6 +36,8 @@ class UserDetailFragment : Fragment() {
     ): View? {
         v = inflater.inflate(R.layout.fragment_user_detail, container, false)
 
+        auth = Firebase.auth
+
         val sharedPref: SharedPreferences = requireContext().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
 
         username = sharedPref.getString("USER","default").toString()
@@ -40,7 +48,7 @@ class UserDetailFragment : Fragment() {
         btnSettings = v.findViewById(R.id.btnSettings)
 
         tvUserName.text = username
-        tvUserEmail.text = "$username@gmail.com"
+        tvUserEmail.text = username
 
         btnLogOut.setOnClickListener {
             val editor = sharedPref.edit()
@@ -48,7 +56,9 @@ class UserDetailFragment : Fragment() {
             editor.putString("USER", "")
             editor.apply()
 
-            startActivity(Intent(activity, LogInActivity::class.java))
+            auth.signOut()
+
+            startActivity(Intent(activity, SignInActivity::class.java))
             activity?.finish()
         }
 

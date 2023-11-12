@@ -10,17 +10,18 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import com.example.brewmaster.R
-import com.example.brewmaster.database.AppDatabase
 import com.example.brewmaster.entities.CoffeeRecipe
 
 class CoffeeRecipeDetailFragment : Fragment() {
 
     private lateinit var v : View
+
     private lateinit var txtNameCoffeeRecipe : EditText
     private lateinit var textDescriptionCoffeeRecipe : EditText
     private lateinit var textCoffeeType : EditText
@@ -33,8 +34,11 @@ class CoffeeRecipeDetailFragment : Fragment() {
     private lateinit var deleteButton : ImageView
     private lateinit var editButton : ImageView
     private var maxRatio : Int = 25
+
     private var idFromList : Int = 0
+
     private val args : CoffeeRecipeDetailFragmentArgs by navArgs()
+    private lateinit var viewModel: CoffeeRecipeDetailViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,6 +64,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
+        viewModel = ViewModelProvider(requireActivity())[CoffeeRecipeDetailViewModel::class.java]
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         maxRatio = prefs.getString("maxRatio","25")!!.toIntOrNull() ?: 25
         seekBarRatio.max = maxRatio
@@ -69,7 +74,6 @@ class CoffeeRecipeDetailFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-
         edittextRatio.addTextChangedListener(object : TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
@@ -124,10 +128,9 @@ class CoffeeRecipeDetailFragment : Fragment() {
         })
 
         addButton.setOnClickListener{
-            val dao = AppDatabase.getInstance(v.context)?.coffeeRecipeDao()
-            val coffeeWaterRatio : Double
 
-            coffeeWaterRatio = if(!edittextRatio.text.isEmpty()){
+
+            val coffeeWaterRatio : Double = if(!edittextRatio.text.isEmpty()){
                 (1 / edittextRatio.text.toString().toDouble())
             }else{
                 ((1/10).toDouble())
@@ -144,7 +147,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
                     strength = seekBarStrength.progress + 1
                 )
 
-                dao?.insertCoffeeRecipe(addCoffeeRecipeToDB)
+                viewModel.addCoffeeRecipe(v.context,addCoffeeRecipeToDB)
 
                 findNavController().popBackStack()
             }else{
@@ -158,7 +161,8 @@ class CoffeeRecipeDetailFragment : Fragment() {
                     strength = seekBarStrength.progress + 1
                 )
 
-                dao?.updateCoffeeRecipe(editCoffeeRecipeToDB)
+                viewModel.updateCoffeeRecipe(v.context,editCoffeeRecipeToDB)
+
                 findNavController().popBackStack()
             }
 
@@ -173,7 +177,6 @@ class CoffeeRecipeDetailFragment : Fragment() {
         }
 
         deleteButton.setOnClickListener {
-            val dao = AppDatabase.getInstance(v.context)?.coffeeRecipeDao()
             val deleteCoffeeRecipeToDB = CoffeeRecipe(
                 id = idFromList,
                 name = txtNameCoffeeRecipe.text.toString(),
@@ -183,19 +186,17 @@ class CoffeeRecipeDetailFragment : Fragment() {
                 coffeeToWaterRatio = 1.0/10,
                 strength = seekBarStrength.progress + 1
             )
-            dao?.delete(deleteCoffeeRecipeToDB)
+            viewModel.deleteCoffeeRecipe(v.context,deleteCoffeeRecipeToDB)
             findNavController().popBackStack()
         }
     }
 
-    private fun defineTypeOfDetail(idFromList: Int) {
-        val dao = AppDatabase.getInstance(v.context)?.coffeeRecipeDao()
-
+    private fun defineTypeOfDetail(idFromList: Int) {   //TODO Hacer con .observe del viewmodel
         if (idFromList == ADD_NEW){
             unlockEdit()
         }else{
             lockEdit()
-            val coffeeRecipeSelected = dao?.fetchCoffeeRecipeById(args.idCoffeeRecipe)
+            val coffeeRecipeSelected = viewModel.getCoffeeRecipeByID(v.context,args.idCoffeeRecipe)
             if(coffeeRecipeSelected != null){
                 txtNameCoffeeRecipe.setText(coffeeRecipeSelected.name)
                 textDescriptionCoffeeRecipe.setText(coffeeRecipeSelected.description)

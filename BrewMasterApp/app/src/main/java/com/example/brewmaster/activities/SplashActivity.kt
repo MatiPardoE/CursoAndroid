@@ -23,7 +23,7 @@ class SplashActivity : AppCompatActivity() {
                 val sharedPref: SharedPreferences = this.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
                 val str = sharedPref.getString("USER", "")
                 if(str == "") {
-                    startActivity(Intent(this, LogInActivity::class.java))
+                    startActivity(Intent(this, SignInActivity::class.java))
                 } else {
                     startActivity(Intent(this, MainActivity::class.java))
                 }

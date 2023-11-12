@@ -69,11 +69,9 @@ class LogInActivity : AppCompatActivity() {
                     val editor = sharedPref.edit()
 
                     editor.putString("USER", username)
-                    //val json: String = GsonBuilder().create().toJson(User())
-                    //editor.putString("USER", json).apply()
                     editor.apply()
 
-                    startActivity(Intent(this, MainActivity::class.java))
+                    startActivity(Intent(this, SignUpActivity::class.java))
                     finish()
                 }
                 else -> Log.d("Error", "Algo salio mal con la funcion checkCredential")

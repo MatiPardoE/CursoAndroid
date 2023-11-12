@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "392540307060",
+    "project_id": "cursoandroid-fe6c6",
+    "storage_bucket": "cursoandroid-fe6c6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392540307060:android:0626ca20c7bd6ba3a81b21",
+        "android_client_info": {
+          "package_name": "com.example.brewmaster"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU-m71pL0UaLx_VYHbqFZJb7J7l-IZRnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
