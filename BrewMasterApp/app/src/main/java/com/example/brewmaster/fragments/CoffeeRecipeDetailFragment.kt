@@ -1,5 +1,6 @@
 package com.example.brewmaster.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -17,6 +20,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
 import com.example.brewmaster.R
 import com.example.brewmaster.entities.CoffeeRecipe
+import pl.droidsonroids.gif.GifImageView
 
 class CoffeeRecipeDetailFragment : Fragment() {
 
@@ -33,9 +37,10 @@ class CoffeeRecipeDetailFragment : Fragment() {
     private lateinit var discardButton : ImageView
     private lateinit var deleteButton : ImageView
     private lateinit var editButton : ImageView
+    private lateinit var loadingGIF : GifImageView
     private var maxRatio : Int = 25
 
-    private var idFromList : Int = 0
+    private var idFromList : String = ""
 
     private val args : CoffeeRecipeDetailFragmentArgs by navArgs()
     private lateinit var viewModel: CoffeeRecipeDetailViewModel
@@ -57,6 +62,51 @@ class CoffeeRecipeDetailFragment : Fragment() {
         editButton = v.findViewById(R.id.editButtonImage)
         discardButton = v.findViewById(R.id.discardButtonImage)
         deleteButton = v.findViewById(R.id.deleteButtonImage)
+        loadingGIF = v.findViewById(R.id.loadingGIF)
+
+        viewModel = ViewModelProvider(requireActivity())[CoffeeRecipeDetailViewModel::class.java]
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        idFromList = args.idCoffeeRecipe
+
+        viewModel.progressView.observe(viewLifecycleOwner, Observer { progress ->
+            if(progress){
+                loadingGIF.visibility = View.VISIBLE
+            }else{
+                loadingGIF.visibility = View.GONE
+            }
+        })
+
+        viewModel.coffeeRecipe.observe(viewLifecycleOwner, Observer { coffeeRecipeSelected ->
+            if(idFromList != ADD_NEW)fillTextView(coffeeRecipeSelected)
+        })
+
+        viewModel.newCoffeeRecipeFlag.observe(viewLifecycleOwner, Observer { newOk ->
+            if (newOk){
+                Toast.makeText(requireContext(), "Recipe save", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            }
+        })
+
+        viewModel.updateCoffeeRecipeFlag.observe(viewLifecycleOwner, Observer { updateOk ->
+            if (updateOk){
+                Toast.makeText(requireContext(), "Recipe updated successfully", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            }
+        })
+
+        viewModel.deletedCoffeeRecipeFlag.observe(viewLifecycleOwner, Observer { deleteOk ->
+            if (deleteOk){
+                Toast.makeText(requireContext(), "Recipe deleted successfully", Toast.LENGTH_SHORT).show()
+                findNavController().popBackStack()
+            }
+        })
+
+        if (idFromList == ADD_NEW){
+            unlockEdit()
+        }else{
+            lockEdit()
+            viewModel.getCoffeeRecipeByID(idFromList)
+        }
 
         return v
     }
@@ -64,12 +114,6 @@ class CoffeeRecipeDetailFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        viewModel = ViewModelProvider(requireActivity())[CoffeeRecipeDetailViewModel::class.java]
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        maxRatio = prefs.getString("maxRatio","25")!!.toIntOrNull() ?: 25
-        seekBarRatio.max = maxRatio
-        idFromList = args.idCoffeeRecipe
-        defineTypeOfDetail(idFromList)
     }
 
     override fun onResume() {
@@ -138,7 +182,6 @@ class CoffeeRecipeDetailFragment : Fragment() {
 
             if(idFromList == ADD_NEW){
                 val addCoffeeRecipeToDB = CoffeeRecipe(
-                    id = 0,
                     name = txtNameCoffeeRecipe.text.toString(),
                     description = textDescriptionCoffeeRecipe.text.toString(),
                     coffeeType = textCoffeeType.text.toString(),
@@ -147,9 +190,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
                     strength = seekBarStrength.progress + 1
                 )
 
-                viewModel.addCoffeeRecipe(v.context,addCoffeeRecipeToDB)
-
-                findNavController().popBackStack()
+                viewModel.addCoffeeRecipe(addCoffeeRecipeToDB)
             }else{
                 val editCoffeeRecipeToDB = CoffeeRecipe(
                     id = idFromList,
@@ -161,9 +202,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
                     strength = seekBarStrength.progress + 1
                 )
 
-                viewModel.updateCoffeeRecipe(v.context,editCoffeeRecipeToDB)
-
-                findNavController().popBackStack()
+                viewModel.updateCoffeeRecipe(editCoffeeRecipeToDB)
             }
 
         }
@@ -177,47 +216,51 @@ class CoffeeRecipeDetailFragment : Fragment() {
         }
 
         deleteButton.setOnClickListener {
-            val deleteCoffeeRecipeToDB = CoffeeRecipe(
-                id = idFromList,
-                name = txtNameCoffeeRecipe.text.toString(),
-                description = textDescriptionCoffeeRecipe.text.toString(),
-                coffeeType = textCoffeeType.text.toString(),
-                grindLevel = textGrindLevel.text.toString(),
-                coffeeToWaterRatio = 1.0/10,
-                strength = seekBarStrength.progress + 1
-            )
-            viewModel.deleteCoffeeRecipe(v.context,deleteCoffeeRecipeToDB)
-            findNavController().popBackStack()
+            showDeleteConfirmationDialog()
         }
     }
 
-    private fun defineTypeOfDetail(idFromList: Int) {   //TODO Hacer con .observe del viewmodel
-        if (idFromList == ADD_NEW){
-            unlockEdit()
-        }else{
-            lockEdit()
-            val coffeeRecipeSelected = viewModel.getCoffeeRecipeByID(v.context,args.idCoffeeRecipe)
-            if(coffeeRecipeSelected != null){
-                txtNameCoffeeRecipe.setText(coffeeRecipeSelected.name)
-                textDescriptionCoffeeRecipe.setText(coffeeRecipeSelected.description)
-                textCoffeeType.setText(coffeeRecipeSelected.coffeeType)
-                textGrindLevel.setText(coffeeRecipeSelected.grindLevel)
-                seekBarStrength.progress = coffeeRecipeSelected.strength-1
-                if(maxRatio <= (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()){
-                    edittextRatio.setText("25")
-                    seekBarRatio.progress = 25
-                }else{
-                    edittextRatio.setText((1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt().toString())
-                    seekBarRatio.progress = (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()
-                }
+    private fun showDeleteConfirmationDialog() {
+        val builder = AlertDialog.Builder(requireContext())
 
+        builder.setTitle("Confirm Deletion")
+        builder.setMessage("Are you sure you want to delete this recipe?")
+
+        // Confirm button
+        builder.setPositiveButton("Yes") { dialog, which ->
+            // Get the ID and call the delete function
+            viewModel.deleteCoffeeRecipe(idFromList)
+
+        }
+
+        // Cancel button
+        builder.setNegativeButton("No") { dialog, which ->
+            // Do nothing or handle as needed
+        }
+
+        // Show the dialog
+        builder.show()
+    }
+    private fun fillTextView(coffeeRecipeSelected : CoffeeRecipe){
+        if(coffeeRecipeSelected != null){
+            txtNameCoffeeRecipe.setText(coffeeRecipeSelected.name)
+            textDescriptionCoffeeRecipe.setText(coffeeRecipeSelected.description)
+            textCoffeeType.setText(coffeeRecipeSelected.coffeeType)
+            textGrindLevel.setText(coffeeRecipeSelected.grindLevel)
+            seekBarStrength.progress = coffeeRecipeSelected.strength-1
+            if(maxRatio <= (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()){
+                edittextRatio.setText("25")
+                seekBarRatio.progress = 25
             }else{
-                txtNameCoffeeRecipe.setText("404 NotFound")
+                edittextRatio.setText((1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt().toString())
+                seekBarRatio.progress = (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()
             }
+        }else{
+            txtNameCoffeeRecipe.setText("404 NotFound")
         }
     }
-
     private fun unlockEdit() {
+        viewModel.disableLoading()
         txtNameCoffeeRecipe.isEnabled = true
         textDescriptionCoffeeRecipe.isEnabled = true
         textCoffeeType.isEnabled = true
@@ -259,7 +302,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
     }
 
     companion object{
-        const val ADD_NEW = -1
+        const val ADD_NEW = "NEW"
     }
 
 

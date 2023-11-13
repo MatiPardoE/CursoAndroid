@@ -11,11 +11,9 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.example.brewmaster.R
-import com.example.brewmaster.activities.LogInActivity
 import com.example.brewmaster.activities.SettingsActivity
 import com.example.brewmaster.activities.SignInActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 

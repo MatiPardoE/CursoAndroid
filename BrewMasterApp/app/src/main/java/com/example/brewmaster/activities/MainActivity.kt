@@ -23,16 +23,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
-
-        //Prepopulated DB if its empty
-        val parentJob = Job()
-        val scope = CoroutineScope(Dispatchers.Default + parentJob)
-        val fireStoreDB = FirestoreDataSource()
-        scope.launch {
-            //TODO: La idea es que cada User tenga su coleccion propia.
-            var sizeDocs = fireStoreDB.countCoffeeRecipes()
-            if(sizeDocs < 1) fireStoreDB.insertCoffeeRecipesPrePopulated()
-        }
         navHostFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
         bottomNavView = findViewById(R.id.bottomNavigationBot)
         NavigationUI.setupWithNavController(bottomNavView, navHostFragment.navController)

@@ -79,4 +79,6 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation ("com.google.code.gson:gson:2.9.0")
+
+    implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.28")
 }

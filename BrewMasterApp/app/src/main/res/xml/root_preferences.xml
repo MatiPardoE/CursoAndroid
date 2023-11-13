@@ -8,16 +8,5 @@
         app:key="lang"
         app:title="Weight Unit"
         app:useSimpleSummaryProvider="true" />
-    <EditTextPreference
-        android:defaultValue="25"
-        android:key="maxRatio"
-        android:singleLine="true"
-        android:title="Max Ratio Value"
-        android:inputType = "number"
-        android:maxLength="3"
-        android:min="5"
-        android:max="100"
-        android:dialogTitle="Ingrese un número"
-        app:useSimpleSummaryProvider="true" />
 
 </PreferenceScreen>

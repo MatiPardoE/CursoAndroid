@@ -11,7 +11,7 @@ import com.example.brewmaster.entities.CoffeeRecipe
 
 
 class CoffeeRecipeAdapter(
-    private val list: MutableList<CoffeeRecipe?>?,
+    private val list: MutableList<CoffeeRecipe>,
     private val onItemClick: (CoffeeRecipe) -> Unit
 ) :
     RecyclerView.Adapter<CoffeeRecipeAdapter.ViewHolder>() {

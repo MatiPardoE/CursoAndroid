@@ -31,10 +31,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.LogInActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize" />
-        <activity
             android:name=".activities.MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />

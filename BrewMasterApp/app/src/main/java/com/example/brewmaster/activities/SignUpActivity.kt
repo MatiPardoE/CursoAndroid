@@ -10,11 +10,16 @@ import android.util.Patterns
 import android.widget.Toast
 import android.window.OnBackInvokedDispatcher
 import com.example.brewmaster.R
+import com.example.brewmaster.database.FirestoreDataSource
 import com.example.brewmaster.databinding.ActivitySignUpBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -41,7 +46,14 @@ class SignUpActivity : AppCompatActivity() {
                         editor.putString("USER", email)
                         editor.apply()
 
-                        startActivity(Intent(this, MainActivity::class.java))
+                        //Create User and add Default CoffeeRecipes
+                        val parentJob = Job()
+                        val scope = CoroutineScope(Dispatchers.IO + parentJob)
+                        val fireStoreDB = FirestoreDataSource()
+                        scope.launch {
+                            it.result.user?.let { it1 -> fireStoreDB.addUser(it1.uid,email) }
+                        }
+                        startActivity(Intent(this, SignInActivity::class.java))
                         finish()
                     }else{
                         val errorCode = it.exception?.message.toString()
@@ -57,7 +69,6 @@ class SignUpActivity : AppCompatActivity() {
     override fun onBackPressed() {
         startActivity(Intent(this, SignInActivity::class.java))
         finish()
-
         super.onBackPressed()
     }
 

@@ -20,7 +20,7 @@
         android:label="fragment_coffee_recipe_detail"
         tools:layout="@layout/fragment_coffee_recipe_detail" >
         <argument android:name="id_coffeeRecipe"
-            android:defaultValue="1" />
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/userDetailFragment"

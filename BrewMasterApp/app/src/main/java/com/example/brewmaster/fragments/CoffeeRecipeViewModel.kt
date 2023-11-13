@@ -1,21 +1,33 @@
 package com.example.brewmaster.fragments
 
-import android.content.Context      //TODO: No deberia estar esto aca con storage deberia cambiar
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.brewmaster.database.AppDatabase
-import com.example.brewmaster.database.CoffeeRecipeDao
+import androidx.lifecycle.viewModelScope
+import com.example.brewmaster.database.FirestoreDataSource
 import com.example.brewmaster.entities.CoffeeRecipe
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class CoffeeRecipeViewModel : ViewModel() {
     // TODO: Implement the ViewModel
-    private var db: AppDatabase? = null
-    private var coffeeRecipeDao: CoffeeRecipeDao? = null
+    private val fireStoreDB = FirestoreDataSource()
 
-    fun getCoffeeRecipeList(context: Context) : MutableList<CoffeeRecipe?>?{
+    //LiveData
+    private val _coffeeRecipesList : MutableLiveData<MutableList<CoffeeRecipe>> = MutableLiveData()
+    val coffeeRecipesList : LiveData <MutableList<CoffeeRecipe>> get() = _coffeeRecipesList
 
-        db = AppDatabase.getInstance(context)
-        coffeeRecipeDao = db?.coffeeRecipeDao()
-        return coffeeRecipeDao?.fetchAllCoffeeRecipe()
+    private val _progressView : MutableLiveData<Boolean> = MutableLiveData()
+    val progressView : LiveData<Boolean> get() = _progressView
 
+    fun refreshCoffeeRecipeList(){
+        viewModelScope.launch(Dispatchers.Main) {
+            _progressView.value = true
+            _coffeeRecipesList.value = fireStoreDB.getAllRecipes()
+            _progressView.value = false
+        }
     }
 }

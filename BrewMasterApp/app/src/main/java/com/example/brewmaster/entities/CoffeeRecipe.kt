@@ -7,17 +7,16 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "CoffeeRecipe")
 data class CoffeeRecipe(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id") val id: Int,
-    @ColumnInfo(name = "name") val name: String,
-    @ColumnInfo(name = "description") val description: String,
-    @ColumnInfo(name = "coffeeType") val coffeeType: String,
-    @ColumnInfo(name = "grindLevel") val grindLevel: String,
-    @ColumnInfo(name = "coffeeToWaterRatio") val coffeeToWaterRatio: Double,
-    @ColumnInfo(name = "strength") val strength: Int
-    //@ColumnInfo(name = "url_image") val url_image: String,
+    val id: String = "", // Valor predeterminado para auto-generación
+    val name: String = "",
+    val description: String = "",
+    val coffeeType: String = "",
+    val grindLevel: String = "",
+    val coffeeToWaterRatio: Double = 0.0,
+    val strength: Int = 0,
+    val barcodeCoffeeBean: String = "5430000838665"
+    //@ColumnInfo(name = "url_image") val url_image: String = "",
     //TODO Ver de agregar la lista de Water Amount
 ) : Parcelable
 
