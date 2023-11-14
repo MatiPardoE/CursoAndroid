@@ -38,7 +38,6 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
 
     fun addCoffeeRecipe(coffeeRecipe: CoffeeRecipe) {
         viewModelScope.launch(Dispatchers.Main) {
-            _newCoffeeRecipeFlag.value = false
             _progressView.value = true
             _newCoffeeRecipeFlag.value = fireStoreDB.addCoffeeRecipe(coffeeRecipe)
             _progressView.value = false
@@ -48,7 +47,6 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
 
     fun updateCoffeeRecipe(coffeeRecipe: CoffeeRecipe) {
         viewModelScope.launch(Dispatchers.Main) {
-            _updateCoffeeRecipeFlag.value = false
             _progressView.value = true
             _updateCoffeeRecipeFlag.value = fireStoreDB.updateCoffeeRecipe(coffeeRecipe)
             _progressView.value = false
