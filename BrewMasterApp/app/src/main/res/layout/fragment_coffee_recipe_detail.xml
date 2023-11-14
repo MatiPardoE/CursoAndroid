@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/frameLayout3"
+    android:background="@color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:outlineAmbientShadowColor="#00BCD4"
@@ -13,6 +14,8 @@
         android:id="@+id/barcodebtn"
         android:layout_width="40dp"
         android:layout_height="0dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:layout_marginEnd="8dp"
         android:background="@drawable/rounded_shape"
         android:src="@drawable/barcode"
@@ -87,6 +90,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="24dp"
         android:text="Description"
+        android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintBottom_toBottomOf="@+id/textDescriptionCoffeeRecipe"
         app:layout_constraintEnd_toStartOf="@id/textDescriptionCoffeeRecipe"
@@ -114,6 +118,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="CoffeeType"
+        android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintBottom_toBottomOf="@+id/textCoffeeType"
         app:layout_constraintEnd_toStartOf="@id/textCoffeeType"
@@ -142,6 +147,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="GrindLevel"
+        android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintBottom_toBottomOf="@+id/textGrindLevel"
         app:layout_constraintEnd_toStartOf="@id/textGrindLevel"
@@ -172,6 +178,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="24dp"
         android:text="Strength:"
+        android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintEnd_toStartOf="@id/seekBarStrength"
         app:layout_constraintHorizontal_bias="0.0"
@@ -185,6 +192,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="24dp"
         android:text="Ratio:"
+        android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Body2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textStrength" />
@@ -219,6 +227,8 @@
         android:layout_height="wrap_content"
         android:clickable="false"
         android:max="25"
+        android:outlineAmbientShadowColor="@color/black"
+        android:outlineSpotShadowColor="@color/black"
         android:min="1"
         android:progress="10"
         app:layout_constraintBottom_toBottomOf="@+id/textRatioLabel"
@@ -231,6 +241,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="1:"
+        android:textColor="@color/black"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         app:layout_constraintBottom_toBottomOf="@+id/seekBarRatio"
         app:layout_constraintEnd_toStartOf="@id/editTextRatio"
@@ -272,20 +283,6 @@
         app:layout_constraintStart_toStartOf="@+id/guideline5"
         app:layout_constraintTop_toTopOf="@+id/editButtonImage" />
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/loadingGIF"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        android:src="@drawable/loading"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5" />
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline"
         android:layout_width="wrap_content"
@@ -324,7 +321,7 @@
     <Spinner
         android:id="@+id/spinnerProducts"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintBottom_toTopOf="@+id/guideline9"
         app:layout_constraintEnd_toStartOf="@+id/barcodebtn"
@@ -339,7 +336,7 @@
         app:layout_constraintGuide_percent="0.9015048" />
 
     <ImageView
-        android:id="@+id/coffeeProductImage"
+        android:id="@+id/imageBeans"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -364,14 +361,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.6" />
+        app:layout_constraintGuide_percent="0.6019152" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/guideline10"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75" />
+        app:layout_constraintGuide_percent="0.75239396" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -431,7 +428,6 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
-            android:text="asdasd"
             android:textStyle="bold"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             android:textAlignment="center"
@@ -486,14 +482,14 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.5"
-            android:text="Processing Method"
+            android:layout_weight="1"
+            android:text="Variety"
             android:textAlignment="center"
             android:layout_marginTop="5dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
         <TextView
-            android:id="@+id/method"
+            android:id="@+id/variety"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="2"
@@ -505,5 +501,18 @@
 
     </LinearLayout>
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/loadingGIF"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:src="@drawable/loading"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

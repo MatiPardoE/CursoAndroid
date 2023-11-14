@@ -2,10 +2,12 @@ package com.example.brewmaster.database
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import com.example.brewmaster.entities.CoffeeBean
 import com.example.brewmaster.entities.CoffeeRecipe
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.AggregateSource
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.CoroutineScope
@@ -19,8 +21,8 @@ class FirestoreDataSource {
 
     // Obtén una instancia de FirebaseFirestore
     private val db = Firebase.firestore
-    private val coffeeRecipesCollection = db.collection("CoffeeRecipes")
     private val usersCollection = db.collection("Users")
+    private val coffeeBeansCollection = db.collection("CoffeeBeans")
 
     suspend fun addUser(UID: String, email: String) {
         val coffeeRecipe = listOf(
@@ -197,16 +199,17 @@ class FirestoreDataSource {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val uid = currentUser?.uid
         var coffeeRecipe: CoffeeRecipe = CoffeeRecipe()
+        var coffeeBean: CoffeeBean = CoffeeBean()
 
         try {
-            val querySnapshot = uid?.let {
+            val querySnapshotRecipe = uid?.let {
                 usersCollection.document(it)
                     .collection("CoffeeRecipes")
                     .document(coffeeRecipeID)
                     .get().await()
             }
-            if (querySnapshot != null) {
-                coffeeRecipe = querySnapshot.toObject<CoffeeRecipe>()!!
+            if (querySnapshotRecipe != null) {
+                coffeeRecipe = querySnapshotRecipe.toObject<CoffeeRecipe>()!!
             }
         } catch (e: Exception) {
             Log.d(TAG, "Cant retrieve CoffeeRecipes: ", e)
@@ -253,7 +256,8 @@ class FirestoreDataSource {
                     "coffeeType", coffeeRecipe.coffeeType,
                     "grindLevel", coffeeRecipe.grindLevel,
                     "coffeeToWaterRatio", coffeeRecipe.coffeeToWaterRatio,
-                    "strength", coffeeRecipe.strength
+                    "strength", coffeeRecipe.strength,
+                    "barcodeCoffeeBean",coffeeRecipe.barcodeCoffeeBean
                 ).await()
             }
         } catch (e: Exception) {
@@ -261,6 +265,27 @@ class FirestoreDataSource {
             return false
         }
         return true
+    }
+
+    suspend fun getCoffeeBeans() : MutableList<CoffeeBean> {
+        val coffeeBeanList = mutableListOf<CoffeeBean>()
+
+        try {
+            val querySnapshot = coffeeBeansCollection
+                    .get().await()
+
+            if (querySnapshot != null) {
+                for (document in querySnapshot.documents) {
+                    val coffeeBean = document.toObject(CoffeeBean::class.java)
+                    if (coffeeBean != null) {
+                        coffeeBeanList.add(coffeeBean)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.d(TAG, "Cant retrieve CoffeeRecipes: ", e)
+        }
+        return coffeeBeanList
     }
 
     suspend fun deleteCoffeeRecipeByID(coffeeRecipeID: String): Boolean {

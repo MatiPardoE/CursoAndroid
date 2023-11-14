@@ -6,8 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.brewmaster.database.FirestoreDataSource
+import com.example.brewmaster.entities.CoffeeBean
 import com.example.brewmaster.entities.CoffeeRecipe
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class CoffeeRecipeDetailViewModel : ViewModel() {
@@ -15,23 +17,26 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
     private val fireStoreDB = FirestoreDataSource()
 
     //LiveData
-    private val _coffeeRecipe : MutableLiveData<CoffeeRecipe> = MutableLiveData()
-    val coffeeRecipe : LiveData<CoffeeRecipe> get() = _coffeeRecipe
+    private val _coffeeRecipe: MutableLiveData<CoffeeRecipe> = MutableLiveData()
+    val coffeeRecipe: LiveData<CoffeeRecipe> get() = _coffeeRecipe
 
-    private val _newCoffeeRecipeFlag : MutableLiveData<Boolean> = MutableLiveData()
-    val newCoffeeRecipeFlag : LiveData<Boolean> get() = _newCoffeeRecipeFlag
+    private val _coffeeBeans: MutableLiveData<MutableList<CoffeeBean>> = MutableLiveData()
+    val coffeeBeans: LiveData<MutableList<CoffeeBean>> get() = _coffeeBeans
 
-    private val _deletedCoffeeRecipeFlag : MutableLiveData<Boolean> = MutableLiveData()
-    val deletedCoffeeRecipeFlag : LiveData<Boolean> get() = _deletedCoffeeRecipeFlag
+    private val _newCoffeeRecipeFlag: MutableLiveData<Boolean> = MutableLiveData()
+    val newCoffeeRecipeFlag: LiveData<Boolean> get() = _newCoffeeRecipeFlag
 
-    private val _updateCoffeeRecipeFlag : MutableLiveData<Boolean> = MutableLiveData()
-    val updateCoffeeRecipeFlag : LiveData<Boolean> get() = _updateCoffeeRecipeFlag
+    private val _deletedCoffeeRecipeFlag: MutableLiveData<Boolean> = MutableLiveData()
+    val deletedCoffeeRecipeFlag: LiveData<Boolean> get() = _deletedCoffeeRecipeFlag
 
-    private val _progressView : MutableLiveData<Boolean> = MutableLiveData()
-    val progressView : LiveData<Boolean> get() = _progressView
+    private val _updateCoffeeRecipeFlag: MutableLiveData<Boolean> = MutableLiveData()
+    val updateCoffeeRecipeFlag: LiveData<Boolean> get() = _updateCoffeeRecipeFlag
+
+    private val _progressView: MutableLiveData<Boolean> = MutableLiveData()
+    val progressView: LiveData<Boolean> get() = _progressView
 
 
-    fun addCoffeeRecipe(coffeeRecipe : CoffeeRecipe){
+    fun addCoffeeRecipe(coffeeRecipe: CoffeeRecipe) {
         viewModelScope.launch(Dispatchers.Main) {
             _newCoffeeRecipeFlag.value = false
             _progressView.value = true
@@ -41,7 +46,7 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
         }
     }
 
-    fun updateCoffeeRecipe(coffeeRecipe : CoffeeRecipe){
+    fun updateCoffeeRecipe(coffeeRecipe: CoffeeRecipe) {
         viewModelScope.launch(Dispatchers.Main) {
             _updateCoffeeRecipeFlag.value = false
             _progressView.value = true
@@ -51,7 +56,7 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
         }
     }
 
-    fun deleteCoffeeRecipe(coffeeRecipeID : String){
+    fun deleteCoffeeRecipe(coffeeRecipeID: String) {
         viewModelScope.launch(Dispatchers.Main) {
             _progressView.value = true
             _deletedCoffeeRecipeFlag.value = fireStoreDB.deleteCoffeeRecipeByID(coffeeRecipeID)
@@ -59,14 +64,28 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
         }
     }
 
-    fun getCoffeeRecipeByID(coffeeRecipeID : String){
+    fun getCoffeeRecipeByID(coffeeRecipeID: String) {
         viewModelScope.launch(Dispatchers.Main) {
             _progressView.value = true
+
+            _coffeeBeans.value = fireStoreDB.getCoffeeBeans()
+
             _coffeeRecipe.value = fireStoreDB.getCoffeeRecipeByID(coffeeRecipeID)
+            // Finalizar la tarea y actualizar el progressView
             _progressView.value = false
         }
     }
 
+    fun getCoffeeBeans(){
+        viewModelScope.launch(Dispatchers.Main) {
+            _progressView.value = true
+
+            _coffeeBeans.value = fireStoreDB.getCoffeeBeans()
+
+            // Finalizar la tarea y actualizar el progressView
+            _progressView.value = false
+        }
+    }
     fun disableLoading(){
         _progressView.value = false
     }

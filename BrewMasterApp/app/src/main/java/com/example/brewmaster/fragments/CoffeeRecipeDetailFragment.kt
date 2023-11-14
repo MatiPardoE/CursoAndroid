@@ -1,16 +1,22 @@
 package com.example.brewmaster.fragments
 
 import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -18,31 +24,45 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
+import com.bumptech.glide.Glide
 import com.example.brewmaster.R
+import com.example.brewmaster.entities.CoffeeBean
 import com.example.brewmaster.entities.CoffeeRecipe
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import pl.droidsonroids.gif.GifImageView
 
 class CoffeeRecipeDetailFragment : Fragment() {
 
-    private lateinit var v : View
+    private lateinit var v: View
 
-    private lateinit var txtNameCoffeeRecipe : EditText
-    private lateinit var textDescriptionCoffeeRecipe : EditText
-    private lateinit var textCoffeeType : EditText
-    private lateinit var textGrindLevel : EditText
-    private lateinit var seekBarStrength : SeekBar
-    lateinit var seekBarRatio : SeekBar
-    lateinit var edittextRatio : EditText
-    private lateinit var addButton : ImageView
-    private lateinit var discardButton : ImageView
-    private lateinit var deleteButton : ImageView
-    private lateinit var editButton : ImageView
-    private lateinit var loadingGIF : GifImageView
-    private var maxRatio : Int = 25
+    private lateinit var spinnerBean: Spinner
+    private lateinit var textBrand: TextView
+    private lateinit var textOrigin: TextView
+    private lateinit var textVariety: TextView
+    private lateinit var textScore: TextView
+    private lateinit var imageBeans: ImageView
+    private lateinit var btnBarCode: ImageView
+    private lateinit var txtNameCoffeeRecipe: EditText
+    private lateinit var textDescriptionCoffeeRecipe: EditText
+    private lateinit var textCoffeeType: EditText
+    private lateinit var textGrindLevel: EditText
+    private lateinit var seekBarStrength: SeekBar
+    lateinit var seekBarRatio: SeekBar
+    lateinit var edittextRatio: EditText
+    private lateinit var addButton: ImageView
+    private lateinit var discardButton: ImageView
+    private lateinit var deleteButton: ImageView
+    private lateinit var editButton: ImageView
+    private lateinit var loadingGIF: GifImageView
 
-    private var idFromList : String = ""
+    private var coffeeBeans: MutableList<CoffeeBean> = mutableListOf()
+    private var maxRatio: Int = 25
 
-    private val args : CoffeeRecipeDetailFragmentArgs by navArgs()
+    private var idFromList: String = ""
+
+    private val args: CoffeeRecipeDetailFragmentArgs by navArgs()
     private lateinit var viewModel: CoffeeRecipeDetailViewModel
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,47 +83,63 @@ class CoffeeRecipeDetailFragment : Fragment() {
         discardButton = v.findViewById(R.id.discardButtonImage)
         deleteButton = v.findViewById(R.id.deleteButtonImage)
         loadingGIF = v.findViewById(R.id.loadingGIF)
+        spinnerBean = v.findViewById(R.id.spinnerProducts)
+        textBrand = v.findViewById(R.id.brand)
+        imageBeans = v.findViewById(R.id.imageBeans)
+        textScore = v.findViewById(R.id.score)
+        textVariety = v.findViewById(R.id.variety)
+        textOrigin = v.findViewById(R.id.origin)
+        btnBarCode = v.findViewById(R.id.barcodebtn)
 
-        viewModel = ViewModelProvider(requireActivity())[CoffeeRecipeDetailViewModel::class.java]
-        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
         idFromList = args.idCoffeeRecipe
 
+        viewModel = ViewModelProvider(requireActivity())[CoffeeRecipeDetailViewModel::class.java]
+
         viewModel.progressView.observe(viewLifecycleOwner, Observer { progress ->
-            if(progress){
+            if (progress) {
                 loadingGIF.visibility = View.VISIBLE
-            }else{
+            } else {
                 loadingGIF.visibility = View.GONE
             }
         })
 
         viewModel.coffeeRecipe.observe(viewLifecycleOwner, Observer { coffeeRecipeSelected ->
-            if(idFromList != ADD_NEW)fillTextView(coffeeRecipeSelected)
+            if (idFromList == coffeeRecipeSelected.id) {
+                fillTextView(coffeeRecipeSelected)
+            }
+        })
+
+        viewModel.coffeeBeans.observe(viewLifecycleOwner, Observer { coffeeBeans ->
+            fillCoffeeBeans(coffeeBeans)
         })
 
         viewModel.newCoffeeRecipeFlag.observe(viewLifecycleOwner, Observer { newOk ->
-            if (newOk){
+            if (newOk) {
                 Toast.makeText(requireContext(), "Recipe save", Toast.LENGTH_SHORT).show()
                 findNavController().popBackStack()
             }
         })
 
         viewModel.updateCoffeeRecipeFlag.observe(viewLifecycleOwner, Observer { updateOk ->
-            if (updateOk){
-                Toast.makeText(requireContext(), "Recipe updated successfully", Toast.LENGTH_SHORT).show()
+            if (updateOk) {
+                Toast.makeText(requireContext(), "Recipe updated successfully", Toast.LENGTH_SHORT)
+                    .show()
                 findNavController().popBackStack()
             }
         })
 
         viewModel.deletedCoffeeRecipeFlag.observe(viewLifecycleOwner, Observer { deleteOk ->
-            if (deleteOk){
-                Toast.makeText(requireContext(), "Recipe deleted successfully", Toast.LENGTH_SHORT).show()
+            if (deleteOk) {
+                Toast.makeText(requireContext(), "Recipe deleted successfully", Toast.LENGTH_SHORT)
+                    .show()
                 findNavController().popBackStack()
             }
         })
 
-        if (idFromList == ADD_NEW){
+        if (idFromList == ADD_NEW) {
             unlockEdit()
-        }else{
+            viewModel.getCoffeeBeans()
+        } else {
             lockEdit()
             viewModel.getCoffeeRecipeByID(idFromList)
         }
@@ -111,14 +147,14 @@ class CoffeeRecipeDetailFragment : Fragment() {
         return v
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
     }
 
     override fun onResume() {
         super.onResume()
-        edittextRatio.addTextChangedListener(object : TextWatcher{
+        edittextRatio.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -153,7 +189,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
 
         })
 
-        seekBarRatio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        seekBarRatio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 //edittextRatio.setText(progress.toString())
             }
@@ -171,27 +207,27 @@ class CoffeeRecipeDetailFragment : Fragment() {
             }
         })
 
-        addButton.setOnClickListener{
+        addButton.setOnClickListener {
 
-
-            val coffeeWaterRatio : Double = if(!edittextRatio.text.isEmpty()){
+            val coffeeWaterRatio: Double = if (!edittextRatio.text.isEmpty()) {
                 (1 / edittextRatio.text.toString().toDouble())
-            }else{
-                ((1/10).toDouble())
+            } else {
+                ((1 / 10).toDouble())
             }
 
-            if(idFromList == ADD_NEW){
+            if (idFromList == ADD_NEW) {
                 val addCoffeeRecipeToDB = CoffeeRecipe(
                     name = txtNameCoffeeRecipe.text.toString(),
                     description = textDescriptionCoffeeRecipe.text.toString(),
                     coffeeType = textCoffeeType.text.toString(),
                     grindLevel = textGrindLevel.text.toString(),
                     coffeeToWaterRatio = coffeeWaterRatio,
-                    strength = seekBarStrength.progress + 1
+                    strength = seekBarStrength.progress + 1,
+                    barcodeCoffeeBean = coffeeBeans[spinnerBean.selectedItemPosition].EAN13
                 )
 
                 viewModel.addCoffeeRecipe(addCoffeeRecipeToDB)
-            }else{
+            } else {
                 val editCoffeeRecipeToDB = CoffeeRecipe(
                     id = idFromList,
                     name = txtNameCoffeeRecipe.text.toString(),
@@ -199,7 +235,8 @@ class CoffeeRecipeDetailFragment : Fragment() {
                     coffeeType = textCoffeeType.text.toString(),
                     grindLevel = textGrindLevel.text.toString(),
                     coffeeToWaterRatio = coffeeWaterRatio,
-                    strength = seekBarStrength.progress + 1
+                    strength = seekBarStrength.progress + 1,
+                    barcodeCoffeeBean = coffeeBeans[spinnerBean.selectedItemPosition].EAN13
                 )
 
                 viewModel.updateCoffeeRecipe(editCoffeeRecipeToDB)
@@ -207,17 +244,52 @@ class CoffeeRecipeDetailFragment : Fragment() {
 
         }
 
-        discardButton.setOnClickListener{
+        discardButton.setOnClickListener {
             findNavController().popBackStack()
         }
 
-        editButton.setOnClickListener{
+        editButton.setOnClickListener {
             unlockEdit()
         }
 
         deleteButton.setOnClickListener {
             showDeleteConfirmationDialog()
         }
+
+        btnBarCode.setOnClickListener {
+            val options = GmsBarcodeScannerOptions.Builder()
+                .setBarcodeFormats(Barcode.FORMAT_EAN_13)
+                .enableAutoZoom() // available on 16.1.0 and higher
+                .build()
+
+            val scanner = GmsBarcodeScanning.getClient(requireContext())
+
+            scanner.startScan()
+                .addOnSuccessListener { barcode ->
+                    matchCoffeeBean(barcode.rawValue)
+                    // Task completed successfully
+                }
+                .addOnCanceledListener {
+                    // Task canceled
+                }
+                .addOnFailureListener { e ->
+                    // Task failed with an exception
+                    Log.d(TAG, "Error Barcode: $e")
+                }
+        }
+
+
+    }
+
+    private fun matchCoffeeBean(value: String?) {
+        val matchingIndex = coffeeBeans.indexOfFirst {
+            it.EAN13 == value
+        }
+
+        if (matchingIndex != -1){
+            spinnerBean.setSelection(matchingIndex)
+        }
+
     }
 
     private fun showDeleteConfirmationDialog() {
@@ -241,24 +313,100 @@ class CoffeeRecipeDetailFragment : Fragment() {
         // Show the dialog
         builder.show()
     }
-    private fun fillTextView(coffeeRecipeSelected : CoffeeRecipe){
-        if(coffeeRecipeSelected != null){
+
+    private fun fillTextView(coffeeRecipeSelected: CoffeeRecipe) {
+        if (coffeeRecipeSelected != null) {
             txtNameCoffeeRecipe.setText(coffeeRecipeSelected.name)
             textDescriptionCoffeeRecipe.setText(coffeeRecipeSelected.description)
             textCoffeeType.setText(coffeeRecipeSelected.coffeeType)
             textGrindLevel.setText(coffeeRecipeSelected.grindLevel)
-            seekBarStrength.progress = coffeeRecipeSelected.strength-1
-            if(maxRatio <= (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()){
+            seekBarStrength.progress = coffeeRecipeSelected.strength - 1
+
+
+            if (maxRatio <= (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()) {
                 edittextRatio.setText("25")
                 seekBarRatio.progress = 25
-            }else{
-                edittextRatio.setText((1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt().toString())
+            } else {
+                edittextRatio.setText(
+                    (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt().toString()
+                )
                 seekBarRatio.progress = (1.0 / coffeeRecipeSelected.coffeeToWaterRatio).toInt()
             }
-        }else{
+
+            if (coffeeBeans.isNotEmpty()) {
+                // Encontrar el índice del CoffeeBean asociado al CoffeeRecipe
+                val matchingIndex = coffeeBeans.indexOfFirst {
+                    it.EAN13 == coffeeRecipeSelected.barcodeCoffeeBean
+                }
+                // Seleccionar el índice correspondiente en el Spinner
+                if (matchingIndex != -1) {
+                    spinnerBean.setSelection(matchingIndex)
+                }
+                textBrand.text = coffeeBeans[matchingIndex].Brand
+                textOrigin.text = coffeeBeans[matchingIndex].Origin
+                textVariety.text = coffeeBeans[matchingIndex].Variety
+                textScore.text = coffeeBeans[matchingIndex].Score
+
+                val imageUrl = coffeeBeans[matchingIndex].Picture
+
+                // Cargar la imagen en el ImageView usando Glide
+                Glide.with(requireContext())
+                    .load(imageUrl)
+                    .centerCrop()
+                    .into(imageBeans)
+            }
+
+        } else {
             txtNameCoffeeRecipe.setText("404 NotFound")
         }
     }
+
+    private fun fillCoffeeBeans(coffeeBeansDB: MutableList<CoffeeBean>) {
+        coffeeBeans = coffeeBeansDB
+
+        // Crear un ArrayAdapter utilizando la lista de CoffeeBean y el atributo name
+        val adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            coffeeBeans.map { it.Name })
+
+        // Establecer el estilo del drop-down
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        // Establecer el adaptador en el Spinner
+        spinnerBean.adapter = adapter
+
+        spinnerBean.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parentView: AdapterView<*>?,
+                selectedItemView: View?,
+                position: Int,
+                id: Long
+            ) {
+                // Aquí manejas la selección del ítem
+                val selectedCoffeeBean = coffeeBeans[position]
+
+                // Actualiza los TextView con la información deseada
+                textBrand.text = selectedCoffeeBean.Brand
+                textOrigin.text = selectedCoffeeBean.Origin
+                textScore.text = selectedCoffeeBean.Score
+                textVariety.text = selectedCoffeeBean.Variety
+
+                val imageUrl = coffeeBeans[position].Picture
+
+                // Cargar la imagen en el ImageView usando Glide
+                Glide.with(requireContext())
+                    .load(imageUrl)
+                    .centerCrop()
+                    .into(imageBeans)
+
+            }
+            override fun onNothingSelected(parentView: AdapterView<*>?) {
+                // Maneja la situación en la que no se selecciona ningún ítem (opcional)
+            }
+        }
+    }
+
     private fun unlockEdit() {
         viewModel.disableLoading()
         txtNameCoffeeRecipe.isEnabled = true
@@ -276,7 +424,10 @@ class CoffeeRecipeDetailFragment : Fragment() {
         discardButton.visibility = View.VISIBLE
         editButton.visibility = View.INVISIBLE
         deleteButton.visibility = View.INVISIBLE
-        if(idFromList != ADD_NEW){
+        spinnerBean.isEnabled = true // Deshabilitar el Spinner
+        spinnerBean.isClickable = true
+        btnBarCode.visibility = View.VISIBLE
+        if (idFromList != ADD_NEW) {
             //Only edit
             deleteButton.visibility = View.VISIBLE
         }
@@ -297,11 +448,14 @@ class CoffeeRecipeDetailFragment : Fragment() {
         seekBarRatio.isEnabled = false
         seekBarStrength.isEnabled = false
         deleteButton.visibility = View.INVISIBLE
+        spinnerBean.isEnabled = false // Deshabilitar el Spinner
+        spinnerBean.isClickable = false
         //Lock siempre se usa con entradas ya existentes
+        btnBarCode.visibility = View.INVISIBLE
         editButton.visibility = View.VISIBLE
     }
 
-    companion object{
+    companion object {
         const val ADD_NEW = "NEW"
     }
 
