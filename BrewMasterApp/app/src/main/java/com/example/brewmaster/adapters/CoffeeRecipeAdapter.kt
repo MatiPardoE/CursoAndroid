@@ -23,12 +23,12 @@ class CoffeeRecipeAdapter(
     }
 
     override fun getItemCount(): Int {
-        return list?.size ?: 0  //Aca le digo al adapter de que tamaño es la lista
+        return list.size  //Aca le digo al adapter de que tamaño es la lista
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         //Uno la vista con la lista por eso llamo la funcion holder.bind
-        val coffeeRecipe = list?.get(position)
+        val coffeeRecipe = list.get(position)
 
         holder.bind(coffeeRecipe)
         holder.setOnclickListener{

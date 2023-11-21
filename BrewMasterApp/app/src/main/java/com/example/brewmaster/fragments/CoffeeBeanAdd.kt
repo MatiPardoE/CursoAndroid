@@ -15,7 +15,7 @@ class CoffeeBeanAdd : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         v = inflater.inflate(R.layout.fragment_coffee_bean_add, container, false)
 
         return v

@@ -31,7 +31,7 @@ class UserDetailFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         v = inflater.inflate(R.layout.fragment_user_detail, container, false)
 
         auth = Firebase.auth

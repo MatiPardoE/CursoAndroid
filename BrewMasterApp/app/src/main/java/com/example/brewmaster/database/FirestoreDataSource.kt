@@ -307,7 +307,7 @@ class FirestoreDataSource {
         return true
     }
 
-    suspend fun updateCoffeeBeanImage(barCode: String, imageUrl: String): Boolean? {
+    suspend fun updateCoffeeBeanImage(barCode: String, imageUrl: String): Boolean {
         try {
                 // Obtén la referencia del documento CoffeeRecipe
                 val beanDocumentReference = coffeeBeansCollection
