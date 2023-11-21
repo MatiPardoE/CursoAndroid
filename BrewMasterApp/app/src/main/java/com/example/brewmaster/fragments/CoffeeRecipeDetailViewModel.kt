@@ -1,13 +1,18 @@
 package com.example.brewmaster.fragments
 
 import android.content.Context      //TODO no deberia estar con storage
+import android.content.Intent
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.brewmaster.activities.SelectImageActivity
 import com.example.brewmaster.database.FirestoreDataSource
 import com.example.brewmaster.entities.CoffeeBean
 import com.example.brewmaster.entities.CoffeeRecipe
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -32,8 +37,15 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
     private val _updateCoffeeRecipeFlag: MutableLiveData<Boolean> = MutableLiveData()
     val updateCoffeeRecipeFlag: LiveData<Boolean> get() = _updateCoffeeRecipeFlag
 
+    private val _updateCoffeeBeanImageFlag: MutableLiveData<Boolean> = MutableLiveData()
+    val updateCoffeeBeanImageFlag: LiveData<Boolean> get() = _updateCoffeeBeanImageFlag
+
     private val _progressView: MutableLiveData<Boolean> = MutableLiveData()
     val progressView: LiveData<Boolean> get() = _progressView
+
+    private val storage = Firebase.storage
+    // Create a storage reference from our app
+    var storageRef = storage.reference
 
 
     fun addCoffeeRecipe(coffeeRecipe: CoffeeRecipe) {
@@ -86,5 +98,19 @@ class CoffeeRecipeDetailViewModel : ViewModel() {
     }
     fun disableLoading(){
         _progressView.value = false
+    }
+
+    fun enableLoading(){
+        _progressView.value = true
+    }
+
+
+    fun updateCoffeeBeanImage(BarCode: String, imageUrl: String) {
+        viewModelScope.launch(Dispatchers.Main) {
+            _progressView.value = true
+            _updateCoffeeBeanImageFlag.value = fireStoreDB.updateCoffeeBeanImage(BarCode,imageUrl)
+            _progressView.value = false
+            _updateCoffeeBeanImageFlag.value = false
+        }
     }
 }

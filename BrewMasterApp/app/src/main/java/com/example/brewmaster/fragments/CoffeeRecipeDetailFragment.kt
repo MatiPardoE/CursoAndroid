@@ -1,8 +1,14 @@
 package com.example.brewmaster.fragments
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -18,6 +24,8 @@ import android.widget.SeekBar
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -28,14 +36,22 @@ import com.bumptech.glide.Glide
 import com.example.brewmaster.R
 import com.example.brewmaster.entities.CoffeeBean
 import com.example.brewmaster.entities.CoffeeRecipe
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import pl.droidsonroids.gif.GifImageView
+import java.io.ByteArrayOutputStream
 
 class CoffeeRecipeDetailFragment : Fragment() {
 
     private lateinit var v: View
+
+    private val REQUEST_PERMISSIONS = 1
+    private val REQUEST_IMAGE_CAPTURE = 2
+    private val storage = FirebaseStorage.getInstance()
+    private val storageReference: StorageReference = storage.reference
 
     private lateinit var spinnerBean: Spinner
     private lateinit var textBrand: TextView
@@ -125,6 +141,13 @@ class CoffeeRecipeDetailFragment : Fragment() {
                 Toast.makeText(requireContext(), "Recipe updated successfully", Toast.LENGTH_SHORT)
                     .show()
                 findNavController().popBackStack()
+            }
+        })
+
+        viewModel.updateCoffeeBeanImageFlag.observe(viewLifecycleOwner, Observer { updateOk ->
+            if (updateOk) {
+                Toast.makeText(requireContext(), "Image update Success", Toast.LENGTH_SHORT)
+                    .show()
             }
         })
 
@@ -278,7 +301,76 @@ class CoffeeRecipeDetailFragment : Fragment() {
                 }
         }
 
+        imageBeans.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.CAMERA
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // El permiso no está concedido, solicitarlo
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.CAMERA),
+                    REQUEST_PERMISSIONS
+                )
+            } else {
+                // El permiso está concedido, abrir la cámara
+                dispatchTakePictureIntent()
+            }
+        }
 
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            viewModel.enableLoading()
+            val imageBitmap = data?.extras?.get("data") as Bitmap
+            // Aquí puedes hacer algo con la imagen capturada (por ejemplo, mostrarla en una ImageView)
+            imageBeans.setImageBitmap(imageBitmap)
+            uploadImageToFirebase(imageBitmap)
+        }
+    }
+
+    private fun uploadImageToFirebase(bitmap: Bitmap) {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
+
+        // Genera un nombre único para la imagen (puedes personalizar esto según tus necesidades)
+        val imageName = "${coffeeBeans[spinnerBean.selectedItemPosition].EAN13}.jpg"
+
+        val imagesRef: StorageReference = storageReference.child("images/$imageName")
+
+        // Sube la imagen a Firebase Storage
+        val uploadTask = imagesRef.putBytes(data)
+        uploadTask.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                // La imagen se subió exitosamente
+                // Puedes obtener la URL de la imagen si es necesario
+                imagesRef.downloadUrl.addOnSuccessListener { uri ->
+                    val imageUrl = uri.toString()
+                    viewModel.updateCoffeeBeanImage(coffeeBeans[spinnerBean.selectedItemPosition].EAN13,imageUrl)
+                    // Aquí puedes hacer algo con la URL de la imagen
+                }
+            } else {
+                // Error al subir la imagen
+                // Puedes manejar el error según tus necesidades
+            }
+        }
+    }
+
+    private fun dispatchTakePictureIntent() {
+
+
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        }
+    }
+
+    private fun hasCameraPermission(): Boolean {
+        return true
     }
 
     private fun matchCoffeeBean(value: String?) {
@@ -426,6 +518,7 @@ class CoffeeRecipeDetailFragment : Fragment() {
         deleteButton.visibility = View.INVISIBLE
         spinnerBean.isEnabled = true // Deshabilitar el Spinner
         spinnerBean.isClickable = true
+        imageBeans.isClickable = true
         btnBarCode.visibility = View.VISIBLE
         if (idFromList != ADD_NEW) {
             //Only edit
@@ -450,10 +543,13 @@ class CoffeeRecipeDetailFragment : Fragment() {
         deleteButton.visibility = View.INVISIBLE
         spinnerBean.isEnabled = false // Deshabilitar el Spinner
         spinnerBean.isClickable = false
+        imageBeans.isClickable = false
         //Lock siempre se usa con entradas ya existentes
         btnBarCode.visibility = View.INVISIBLE
         editButton.visibility = View.VISIBLE
     }
+
+
 
     companion object {
         const val ADD_NEW = "NEW"

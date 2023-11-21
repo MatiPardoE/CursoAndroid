@@ -306,4 +306,20 @@ class FirestoreDataSource {
         }
         return true
     }
+
+    suspend fun updateCoffeeBeanImage(barCode: String, imageUrl: String): Boolean? {
+        try {
+                // Obtén la referencia del documento CoffeeRecipe
+                val beanDocumentReference = coffeeBeansCollection
+                    .document(barCode)
+
+            beanDocumentReference.update(
+                    "Picture", imageUrl
+                ).await()
+        } catch (e: Exception) {
+            Log.d(TAG, "Failed to update CoffeeRecipe: ", e)
+            return false
+        }
+        return true
+    }
 }
